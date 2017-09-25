@@ -10,26 +10,30 @@ export default function connector(doubleDutchClient, feature) {
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, feature) },
     database: {
-      totalPrivateUserRef(subPath) {
-        return dbRef(`private/total/users/${firebase.auth().currentUser.uid}`, subPath)
+      private: {
+        userRef(subPath) {
+          return dbRef(`private/total/users/${firebase.auth().currentUser.uid}`, subPath)
+        },
+        adminableUserRef(subPath) {
+          return dbRef(`private/adminable/users/${firebase.auth().currentUser.uid}`, subPath)
+        },
+        adminRef(subPath) {
+          return dbRef(`public/admin`, subPath)
+        }
       },
-      adminablePrivateUserRef(subPath) {
-        return dbRef(`private/total/users/${firebase.auth().currentUser.uid}`, subPath)
-      },
-      publicUserRef(subPath) {
-        return dbRef(`public/users/${firebase.auth().currentUser.uid}`, subPath)
-      },
-      publicUsersRef(subPath) {
-        return dbRef(`public/users`, subPath)
-      },
-      adminPrivateRef(subPath) {
-        return dbRef(`private/admin`, subPath)
-      },
-      adminPublicRef(subPath) {
-        return dbRef(`public/admin`, subPath)
-      },
-      publicRef(subPath) {
-        return dbRef(`public/all`, subPath)
+      public: {
+        userRef(subPath) {
+          return dbRef(`public/users/${firebase.auth().currentUser.uid}`, subPath)
+        },
+        usersRef(subPath) {
+          return dbRef(`public/users`, subPath)
+        },
+        adminRef(subPath) {
+          return dbRef(`private/admin`, subPath)
+        },
+        allRef(subPath) {
+          return dbRef(`public/all`, subPath)
+        }
       }
     }
   }
