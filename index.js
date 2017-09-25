@@ -10,20 +10,26 @@ export default function connector(doubleDutchClient, feature) {
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, feature) },
     database: {
-      userPrivateRef(subPath) {
-        return dbRef(`users/${firebase.auth().currentUser.uid}/private`, subPath)
+      totalPrivateUserRef(subPath) {
+        return dbRef(`private/total/users/${firebase.auth().currentUser.uid}`, subPath)
       },
-      userPublicRef(subPath) {
-        return dbRef(`users/${firebase.auth().currentUser.uid}/public`, subPath)
+      adminablePrivateUserRef(subPath) {
+        return dbRef(`private/total/users/${firebase.auth().currentUser.uid}`, subPath)
+      },
+      publicUserRef(subPath) {
+        return dbRef(`public/users/${firebase.auth().currentUser.uid}`, subPath)
+      },
+      publicUsersRef(subPath) {
+        return dbRef(`public/users`, subPath)
       },
       adminPrivateRef(subPath) {
-        return dbRef(`admin/private`, subPath)
+        return dbRef(`private/admin`, subPath)
       },
       adminPublicRef(subPath) {
-        return dbRef(`admin/public`, subPath)
+        return dbRef(`public/admin`, subPath)
       },
       publicRef(subPath) {
-        return dbRef(`public`, subPath)
+        return dbRef(`public/all`, subPath)
       }
     }
   }
