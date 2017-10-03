@@ -18,7 +18,7 @@ export default function connector(doubleDutchClient, feature) {
           return dbRef(`private/adminable/users/${firebase.auth().currentUser.uid}`, subPath)
         },
         adminRef(subPath) {
-          return dbRef(`public/admin`, subPath)
+          return dbRef(`private/admin`, subPath)
         }
       },
       public: {
@@ -29,7 +29,7 @@ export default function connector(doubleDutchClient, feature) {
           return dbRef(`public/users`, subPath)
         },
         adminRef(subPath) {
-          return dbRef(`private/admin`, subPath)
+          return dbRef(`public/admin`, subPath)
         },
         allRef(subPath) {
           return dbRef(`public/all`, subPath)
