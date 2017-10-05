@@ -3,12 +3,12 @@ import config from './config'
 
 // Parameters
 // - client  - A DoubleDutch environment-specific client, e.g. from @doubledutch/rn-client)
-// - feature - The name of the Bazaar Feature from your bazaar.json // TODO: It would be nice if this were injected in the DD bindings.
-export default function connector(doubleDutchClient, feature) {
+// - extension - The name of the DoubleDutch extension from your package.json // TODO: It would be nice if this were injected in the DD bindings.
+export default function connector(doubleDutchClient, extension) {
   const { currentEvent } = doubleDutchClient
   return {
     initializeAppWithSimpleBackend,
-    signin() { return signin(doubleDutchClient, feature) },
+    signin() { return signin(doubleDutchClient, extension) },
     database: {
       private: {
         userRef(subPath) {
@@ -39,7 +39,7 @@ export default function connector(doubleDutchClient, feature) {
   }
 
   function dbRef(midPath, subPath) {
-    return firebase.database().ref(`simple/${feature}/events/${currentEvent.EventId}/${midPath}/${subPath || ''}`)
+    return firebase.database().ref(`simple/${extension}/events/${currentEvent.EventId}/${midPath}/${subPath || ''}`)
   }
 }
 
@@ -56,7 +56,7 @@ export function initializeAppWithSimpleBackend() {
 // Authenticates to Firebase by obtaining a DoubleDutch token and exchanging
 // it for a custom Firebase token with `uid` and additional claims:
 // - attendee
-// - feature
+// - extension
 // - eventId
 // - userId
 // - userIdentifierId
@@ -64,11 +64,11 @@ export function initializeAppWithSimpleBackend() {
 // - email
 //
 // Returns a Promise that resolves to the current user when Firebase authentication is complete
-export function signin(doubleDutchClient, feature) {
+export function signin(doubleDutchClient, extension) {
   const { currentEvent, region } = doubleDutchClient
 
   return doubleDutchClient.getToken()
-  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/attendeeToken?event=${encodeURIComponent(currentEvent.EventId)}&feature=${encodeURIComponent(feature)}&region=${region}`, {
+  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/attendeeToken?event=${encodeURIComponent(currentEvent.EventId)}&extension=${encodeURIComponent(extension)}&region=${region}`, {
     headers: { authorization: `Bearer ${ddToken}` }
   }))
   .then(res => {

@@ -1,9 +1,9 @@
 @doubledutch/firebase-connector
 ===============================
 
-Convenience library for building DoubleDutch features with a preconfigured
+Convenience library for building DoubleDutch extensions with a preconfigured
 Google Firebase backend.  See
-[DoubleDutch features with React Native](https://doubledutch.github.io/rn/) for
+[DoubleDutch extensions with React Native](https://doubledutch.github.io/rn/) for
 more information.
 
 # Usage
@@ -15,7 +15,7 @@ npm i --save @doubledutch/firebase-connector
 ```javascript
 import client from '@doubledutch/rn-client'
 import FirebaseConnector from '@doubledutch/firebase-connector'
-const fbc = FirebaseConnector(client, 'myfeature')
+const fbc = FirebaseConnector(client, 'myextension')
 
 fbc.initializeAppWithSimpleBackend()
 ```
@@ -26,10 +26,10 @@ fbc.initializeAppWithSimpleBackend()
   [firebase.initializeApp()](https://firebase.google.com/docs/reference/node/firebase)
   with configuration providing access to DoubleDutch's Firebase backend, with
   database references secured and scoped at the event and attendee level. This
-  function must be called when your feature is initializing, before attempting
+  function must be called when your extension is initializing, before attempting
   to use Firebase functionality.
 - signin(): Returns a promise that resolves when authentication to the
-  DoubleDutch feature backend is complete. Must be called after
+  DoubleDutch extension backend is complete. Must be called after
   `initializeAppWithSimpleBackend()`, and must resolve before calling any of the
   following functions.
 
