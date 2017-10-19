@@ -39,7 +39,7 @@ export default function connector(doubleDutchClient, extension) {
   }
 
   function dbRef(midPath, subPath) {
-    return firebase.database().ref(`simple/${extension}/events/${currentEvent.EventId}/${midPath}/${subPath || ''}`)
+    return firebase.database().ref(`simple/${extension}/events/${currentEvent.id}/${midPath}/${subPath || ''}`)
   }
 }
 
@@ -68,7 +68,7 @@ export function signin(doubleDutchClient, extension) {
   const { currentEvent, region } = doubleDutchClient
 
   return doubleDutchClient.getToken()
-  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/attendeeToken?event=${encodeURIComponent(currentEvent.EventId)}&extension=${encodeURIComponent(extension)}&region=${region}`, {
+  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/attendeeToken?event=${encodeURIComponent(currentEvent.id)}&extension=${encodeURIComponent(extension)}&region=${region}`, {
     headers: { authorization: `Bearer ${ddToken}` }
   }))
   .then(res => {
