@@ -5,17 +5,17 @@ import config from './config'
 // - client  - A DoubleDutch environment-specific client, e.g. from @doubledutch/rn-client)
 // - extension - The name of the DoubleDutch extension from your package.json // TODO: It would be nice if this were injected in the DD bindings.
 export default function connector(doubleDutchClient, extension) {
-  const { currentEvent } = doubleDutchClient
+  const { currentEvent, currentUser } = doubleDutchClient
   return {
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, extension) },
     database: {
       private: {
         userRef(subPath) {
-          return dbRef(`private/total/users/${firebase.auth().currentUser.uid}`, subPath)
+          return dbRef(`private/total/users/${currentUser.id}`, subPath)
         },
         adminableUserRef(subPath) {
-          return dbRef(`private/adminable/users/${firebase.auth().currentUser.uid}`, subPath)
+          return dbRef(`private/adminable/users/${currentUser.id}`, subPath)
         },
         adminRef(subPath) {
           return dbRef(`private/admin`, subPath)
@@ -23,7 +23,7 @@ export default function connector(doubleDutchClient, extension) {
       },
       public: {
         userRef(subPath) {
-          return dbRef(`public/users/${firebase.auth().currentUser.uid}`, subPath)
+          return dbRef(`public/users/${currentUser.id}`, subPath)
         },
         usersRef(subPath) {
           return dbRef(`public/users`, subPath)
