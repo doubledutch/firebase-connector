@@ -5,10 +5,11 @@ import config from './config'
 // - client  - A DoubleDutch environment-specific client, e.g. from @doubledutch/rn-client)
 // - extension - The name of the DoubleDutch extension from your package.json // TODO: It would be nice if this were injected in the DD bindings.
 export default function connector(doubleDutchClient, extension) {
-  const { currentEvent, currentUser } = doubleDutchClient
+  const { currentUser } = doubleDutchClient
   return {
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, extension) },
+    signinAdmin() { return signinAdmin(doubleDutchClient, extension) },
     database: {
       private: {
         userRef(subPath) {
@@ -16,6 +17,9 @@ export default function connector(doubleDutchClient, extension) {
         },
         adminableUserRef(subPath) {
           return dbRef(`private/adminable/users/${currentUser.id}`, subPath)
+        },
+        adminableUsersRef(userId, subPath) {
+          return dbRef(`private/adminable/users`, subPath)
         },
         adminRef(subPath) {
           return dbRef(`private/admin`, subPath)
@@ -39,6 +43,8 @@ export default function connector(doubleDutchClient, extension) {
   }
 
   function dbRef(midPath, subPath) {
+    const { currentEvent } = doubleDutchClient
+    if (!currentEvent) throw 'currentEvent is not yet known in this environment. Wait until signin() or signinAdmin() has resolved.'
     return firebase.database().ref(`simple/${extension}/events/${currentEvent.id}/${midPath}/${subPath || ''}`)
   }
 }
@@ -55,7 +61,7 @@ export function initializeAppWithSimpleBackend() {
 
 // Authenticates to Firebase by obtaining a DoubleDutch token and exchanging
 // it for a custom Firebase token with `uid` and additional claims:
-// - attendee
+// - type: 'attendee'
 // - extension
 // - eventId
 // - userId
@@ -65,10 +71,16 @@ export function initializeAppWithSimpleBackend() {
 //
 // Returns a Promise that resolves to the current user when Firebase authentication is complete
 export function signin(doubleDutchClient, extension) {
-  const { currentEvent, region } = doubleDutchClient
+  return signinType('attendee', doubleDutchClient, extension)  
+}
 
-  return doubleDutchClient.getToken()
-  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/attendeeToken?event=${encodeURIComponent(currentEvent.id)}&extension=${encodeURIComponent(extension)}&region=${region}`, {
+function signinAdmin(doubleDutchClient, extension) {
+  return signinType('admin', doubleDutchClient, extension)
+}
+
+function signinType(type, client, extension) {
+  return client.getToken()
+  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/${type}Token?event=${encodeURIComponent(client.currentEvent.id)}&extension=${encodeURIComponent(extension)}&region=${client.region}`, {
     headers: { authorization: `Bearer ${ddToken}` }
   }))
   .then(res => {
