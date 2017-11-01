@@ -18,7 +18,7 @@ export default function connector(doubleDutchClient, extension) {
         adminableUserRef(subPath) {
           return dbRef(`private/adminable/users/${currentUser.id}`, subPath)
         },
-        adminableUsersRef(userId, subPath) {
+        adminableUsersRef(subPath) {
           return dbRef(`private/adminable/users`, subPath)
         },
         adminRef(subPath) {
