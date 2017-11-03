@@ -10,6 +10,10 @@ export default function connector(doubleDutchClient, extension) {
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, extension) },
     signinAdmin() { return signinAdmin(doubleDutchClient, extension) },
+    getLongLivedAdminToken() {
+      if (doubleDutchClient.longLivedToken) return Promise.resolve(doubleDutchClient.longLivedToken)
+      return getToken('adminLongLived', doubleDutchClient, extension)
+    },
     database: {
       private: {
         userRef(subPath) {
@@ -75,10 +79,24 @@ export function signin(doubleDutchClient, extension) {
 }
 
 function signinAdmin(doubleDutchClient, extension) {
-  return signinType('admin', doubleDutchClient, extension)
+  if (doubleDutchClient.longLivedToken) {
+    const [eventId, region] = doubleDutchClient.longLivedToken.split(':', 2)
+    doubleDutchClient.region = region
+    doubleDutchClient.currentEvent = { id: eventId }
+    return fetch(`${config.firebase.cloudFunctions}/adminToken`, {
+      headers: { authorization: `Bearer jwt-${doubleDutchClient.longLivedToken}` }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Signin error: ${res.status} ${res.statusText || ''}`)
+      return res.text()
+    })
+    .then(firebaseToken => firebase.auth().signInWithCustomToken(firebaseToken))
+  } else {
+    return signinType('admin', doubleDutchClient, extension)
+  }
 }
 
-function signinType(type, client, extension) {
+function getToken(type, client, extension){
   return client.getToken()
   .then(ddToken => fetch(`${config.firebase.cloudFunctions}/${type}Token?event=${encodeURIComponent(client.currentEvent.id)}&extension=${encodeURIComponent(extension)}&region=${client.region}`, {
     headers: { authorization: `Bearer ${ddToken}` }
@@ -87,5 +105,9 @@ function signinType(type, client, extension) {
     if (!res.ok) throw new Error(`Signin error: ${res.status} ${res.statusText || ''}`)
     return res.text()
   })
+}
+
+function signinType(type, client, extension) {
+  return getToken(type, client, extension)
   .then(firebaseToken => firebase.auth().signInWithCustomToken(firebaseToken))
 }
