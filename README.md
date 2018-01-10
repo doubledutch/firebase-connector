@@ -32,6 +32,8 @@ fbc.initializeAppWithSimpleBackend()
   DoubleDutch extension backend is complete. Must be called after
   `initializeAppWithSimpleBackend()`, and must resolve before calling any of the
   following functions.
+- signinAdmin(): Similar to `signin()` but should be called instead, when
+  building an admin page for a DoubleDutch extension.
 
 ### Database
 
@@ -50,6 +52,10 @@ various levels of security.
 - `database.private.adminableUserRef(path)`: Gets a [Firesbase ref][firebase-ref]
   to a key that is readable and writable only by the current attendee or an
   event owner for the current event.
+- `database.private.adminableUsersRef()`: Gets a [Firesbase ref][firebase-ref]
+  to a key that is the root of all those provided by
+  `database.private.adminableUserRef(path)` for all attendees in the current
+  event. Keys under this ref will be the `id` of individual attendees.
 - `database.private.admin(path)`: Gets a [Firebase ref][firebase-ref] to a key
   that is readable and writable only by an event owner for the current event.
 
@@ -58,9 +64,9 @@ various levels of security.
 - `database.public.userRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
   that is writable only by the current attendee, and readable by anyone
   authenticated to the current event.
-- `database.public.usersRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.public.usersRef()`: Gets a [Firebase ref][firebase-ref] to a key
   that is the root of all those provided by `database.public.userRef(path)` for
-  all users in the current event. Keys under this ref will be the `uid` of
+  all users in the current event. Keys under this ref will be the `id` of
   individual users.
 - `database.public.adminRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
   that is writable only by an event owner for the current event, and readable by
