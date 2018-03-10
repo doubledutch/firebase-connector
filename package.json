@@ -17,7 +17,7 @@
     "doubledutch"
   ],
   "author": "DoubleDutch",
-  "license": "ISC",
+  "license": "apache-2.0",
   "bugs": {
     "url": "https://github.com/doubledutch/firebase-connector/issues"
   },
