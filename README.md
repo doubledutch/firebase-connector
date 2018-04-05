@@ -47,34 +47,34 @@ various levels of security.
 
 #### Private
 
-- `database.private.userRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.private.userRef(path)`: `private/total/users/:id` : Gets a [Firebase ref][firebase-ref] to a key
   that is readable and writable only by the current attendee.
-- `database.private.adminableUserRef(path)`: Gets a [Firesbase ref][firebase-ref]
+- `database.private.adminableUserRef(path)`: `private/adminable/users/:id` : Gets a [Firesbase ref][firebase-ref]
   to a key that is readable and writable only by the current attendee or an
   event owner for the current event.
-- `database.private.adminableUsersRef()`: Gets a [Firesbase ref][firebase-ref]
+- `database.private.adminableUsersRef()`: `private/adminable/users` : Gets a [Firesbase ref][firebase-ref]
   to a key that is the root of all those provided by
   `database.private.adminableUserRef(path)` for all attendees in the current
   event. Keys under this ref will be the `id` of individual attendees.
-- `database.private.tiersRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.private.tiersRef(path)`: `private/adminable/tiers` : Gets a [Firebase ref][firebase-ref] to a key
   that is writable only by an event owner for the current event, and readable
   by anyone in the specified tier. `default` is used as the key for the default tier.
-- `database.private.adminRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.private.adminRef(path)`: `private/admin` : Gets a [Firebase ref][firebase-ref] to a key
   that is readable and writable only by an event owner for the current event.
 
 #### Public
 
-- `database.public.userRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.public.userRef(path)`: `public/users/:id` : Gets a [Firebase ref][firebase-ref] to a key
   that is writable only by the current attendee, and readable by anyone
   authenticated to the current event.
-- `database.public.usersRef()`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.public.usersRef()` : `public/users` : Gets a [Firebase ref][firebase-ref] to a key
   that is the root of all those provided by `database.public.userRef(path)` for
   all users in the current event. Keys under this ref will be the `id` of
   individual users.
-- `database.public.adminRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.public.adminRef(path)`: `public/admin` : Gets a [Firebase ref][firebase-ref] to a key
   that is writable only by an event owner for the current event, and readable by
   anyone authenticated to the current event.
-- `database.public.allRef(path)`: Gets a [Firebase ref][firebase-ref] to a key
+- `database.public.allRef(path)`: `public/all` : Gets a [Firebase ref][firebase-ref] to a key
   that is readable and writable by anyone authenticated to the current event.
 
 [firebase-ref]: https://firebase.google.com/docs/reference/node/firebase.database.Reference
