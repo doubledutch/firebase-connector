@@ -49,10 +49,10 @@ various levels of security.
 
 - `database.private.userRef(path)`: `private/total/users/:id` : Gets a [Firebase ref][firebase-ref] to a key
   that is readable and writable only by the current attendee.
-- `database.private.adminableUserRef(path)`: `private/adminable/users/:id` : Gets a [Firesbase ref][firebase-ref]
+- `database.private.adminableUserRef(path)`: `private/adminable/users/:id` : Gets a [Firebase ref][firebase-ref]
   to a key that is readable and writable only by the current attendee or an
   event owner for the current event.
-- `database.private.adminableUsersRef()`: `private/adminable/users` : Gets a [Firesbase ref][firebase-ref]
+- `database.private.adminableUsersRef()`: `private/adminable/users` : Gets a [Firebase ref][firebase-ref]
   to a key that is the root of all those provided by
   `database.private.adminableUserRef(path)` for all attendees in the current
   event. Keys under this ref will be the `id` of individual attendees.
