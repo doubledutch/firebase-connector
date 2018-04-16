@@ -78,3 +78,63 @@ various levels of security.
   that is readable and writable by anyone authenticated to the current event.
 
 [firebase-ref]: https://firebase.google.com/docs/reference/node/firebase.database.Reference
+
+### Helpers
+
+The following functions are provided to aid in mapping data in firebase to
+state in a React Component. These functions set up subscriptions to
+`child_added`, `child_changed`, and `child_removed` events.
+
+#### Map data to state
+
+- `mapPushedDataToStateObjects(ref, component, stateKey, keyFn)`
+  Turns firebase objects stored immediately under the given ref into state at
+  `[stateKey]: { [key]: {...value, id: key} }`
+  where `key` is `keyFn(keyInData, valueInData)` if `keyFn` is specified, otherwise
+  the firebase key.
+
+- `mapPushedDataToObjectOfStateObjects(ref, component, stateKey, keyFn, subKeyFn)`
+  Turns firebase objects stored immediately under the given ref into state at
+  `[stateKey]: { [key]: { [subKey]: {...value, id: key} } }`
+  where `key`    = `keyFn(keyInData, valueInData)`
+  and   `subKey` = `subKeyFn(userId, keyInUserData, value)` if `subKeyFn` is specified,
+  otherwise the firebase key.
+
+
+#### Map per-user data to state
+
+- `mapPerUserPrivateAdminablePushedDataToStateObjects(fbc, userRefKey, component, stateKey, keyFn)`
+  Turns firebase objects `{...value}` with paths `/public/users/:userId/:userRefKey/:keyInUserData`
+  into state at `[stateKey]: { [key]: {...value, userId, id: key} }`
+  where `key` = `keyFn(userId, keyInUserData, value)`
+
+- `mapPerUserPublicPushedDataToStateObjects(fbc, userRefKey, component, stateKey, keyFn)`
+  Turns firebase objects `{...value}` with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
+  into state at `[stateKey]: { [key]: {...value, userId, id: key} }`
+  where `key` = `keyFn(userId, keyInUserData, value)`
+
+- `mapPerUserPrivateAdminablePushedDataToObjectOfStateObjects(fbc, userRefKey, component, stateKey, keyFn, subKeyFn)`
+  Turns firebase objects `{...value}` with paths `/public/users/:userId/:userRefKey/:keyInUserData`
+  into state at `[stateKey]: { [key]: {[subKey]: {...value, userId, key} } }`
+  where `key` =    `keyFn(userId, keyInUserData, value)`
+  and   `subKey` = `subKeyFn(userId, keyInUserData, value)`
+
+- `mapPerUserPublicPushedDataToObjectOfStateObjects(fbc, userRefKey, component, stateKey, keyFn, subKeyFn)`
+  Turns firebase objects `{...value}` with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
+  into state at `[stateKey]: { [key]: {[subKey]: {...value, userId, key} } }`
+  where `key` =    `keyFn(userId, keyInUserData, value)`
+  and   `subKey` = `subKeyFn(userId, keyInUserData, value)`
+
+#### Count per-user data
+
+- `reducePerUserPublicDataToStateCount(fbc, userRefKey, component, stateKey, keyFn)`
+  Turns firebase objects `{...value} ` with paths `/public/users/:userId/:userRefKey/:keyInUserData`
+  into state at `[stateKey]: { [key]: count }`
+  where `key`   = `keyFn(userId, keyInUserData, value)`
+  and   `count` = the number of objects from all users with `[key]`
+
+- `reducePerUserPrivateAdminableDataToStateCount(fbc, userRefKey, component, stateKey, keyFn)`
+  Turns firebase objects `{...value} ` with paths `/private/adminable/:userId/:userRefKey/:keyInUserData`
+  into state at `[stateKey]: { [key]: count }`
+  where `key`   = `keyFn(userId, keyInUserData, value)`
+  and   `count` = the number of objects from all users with `[key]`

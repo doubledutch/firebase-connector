@@ -16,6 +16,7 @@
 
 import firebase from 'firebase'
 import config from './config'
+export * from './helpers'
 
 // Parameters
 // - client  - A DoubleDutch environment-specific client, e.g. from @doubledutch/rn-client)
