@@ -19,7 +19,7 @@ import {
   mapPerUserPrivateAdminablePushedDataToStateObjects, mapPerUserPublicPushedDataToStateObjects,
   mapPerUserPrivateAdminablePushedDataToObjectOfStateObjects, mapPerUserPublicPushedDataToObjectOfStateObjects,
   reducePerUserPublicDataToStateCount, reducePerUserPrivateAdminableDataToStateCount,
-} from './helpers'
+} from '.'
 
 test('mapPushedDataToStateObjects', () => {
   const fbc = mockFirebaseConnector()
