@@ -174,7 +174,7 @@ export function convertPerUserDataToState(usersRef, userRefKey, component, state
       const stateForKey = state[stateKey]
       const newStateForKey = {...stateForKey}
 
-      // Remove old data for the user
+      // Remove old data for the user. This is removed at the `key` level.
       const oldKeysForUser = (keysByUserId[userId] || [])
       oldKeysForUser.forEach(key => {
         try {
@@ -184,20 +184,23 @@ export function convertPerUserDataToState(usersRef, userRefKey, component, state
         }
       })
 
-      // Add current data for the user
-      const newKeysForUser = []
+      // Add current data for the user. This is added per key/subKey, so we
+      // ensure that duplicate keys are not recorded with a JS object.
+      // That way, stateDestroyer only removes each key's data once when a
+      // user's data updates.
+      const newKeysForUser = {}
       Object.keys(userData).forEach(keyInUserData => {
         try {
           const value = userData[keyInUserData]
           const key = keyFn(userId, keyInUserData, value)
-          newKeysForUser.push(key)
+          newKeysForUser[key] = true
           stateCreator(newStateForKey, userId, key, value, keyInUserData)
         } catch (e) {
           console.error(e)
         }
       })
 
-      keysByUserId[userId] = newKeysForUser
+      keysByUserId[userId] = Object.keys(newKeysForUser)
       
       return {[stateKey]: newStateForKey}
     })

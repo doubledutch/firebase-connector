@@ -139,35 +139,42 @@ test('mapPerUser-PushedDataToObjectOfStateObjects', () => {
   
     fbc.handlers[handlerName].child_added({
       key: '1234',
-      val() { return { fData: {a: {questionId: 'q1', x:5}, b: {questionId: 'q2', x:10}} } }
-    })
-    fbc.handlers[handlerName].child_added({
-      key: '5678',
-      val() { return { fData: {c: {questionId: 'q1', x:15}} } }
+      val() { return { fData: {a: {questionId: 'q1', x:5}, b: {questionId: 'q2', x:10}, d: {questionId: 'q1', x:20}} } }
     })
   
     expect(comp.state.sData).toEqual({
       q1: {
         a: {id: 'a', questionId: 'q1', userId: '1234', x: 5},
-        c: {id: 'c', questionId: 'q1', userId: '5678', x: 15},
+        d: {id: 'd', questionId: 'q1', userId: '1234', x: 20},
       },
       q2: {
         b: {id: 'b', questionId: 'q2', userId: '1234', x: 10},
       }
     })
-  
+
     fbc.handlers[handlerName].child_changed({
       key: '1234',
       val() { return { fData: {a: {questionId: 'q1', x:5} } } }
-    })  
+    })
   
+    expect(comp.state.sData).toEqual({
+      q1: {
+        a: {id: 'a', questionId: 'q1', userId: '1234', x: 5},
+      }
+    })
+
+    fbc.handlers[handlerName].child_added({
+      key: '5678',
+      val() { return { fData: {c: {questionId: 'q1', x:15}} } }
+    })
+
     expect(comp.state.sData).toEqual({
       q1: {
         a: {id: 'a', questionId: 'q1', userId: '1234', x: 5},
         c: {id: 'c', questionId: 'q1', userId: '5678', x: 15},
       }
     })
-  
+
     fbc.handlers[handlerName].child_removed({
       key: '1234',
       val() { return { fData: {a: {questionId: 'q1', x:5} } } }
