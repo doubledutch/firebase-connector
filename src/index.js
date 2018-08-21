@@ -78,7 +78,7 @@ export default function connector(doubleDutchClient, extension) {
         adminPrivateRef(exhibitorId, subPath) {
           return dbRef(`exhibitors/${exhibitorId}/admin/private`, subPath)
         },
-        adminPrivateRef(exhibitorId, subPath) {
+        adminPublicRef(exhibitorId, subPath) {
           return dbRef(`exhibitors/${exhibitorId}/admin/public`, subPath)
         },
       },
