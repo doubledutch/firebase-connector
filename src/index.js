@@ -18,7 +18,7 @@ import firebase from 'firebase'
 import config from './config'
 export {
   mapPushedDataToStateObjects, mapPushedDataToObjectOfStateObjects,
-  mapPerUserPrivateAdminablePushedDataToStateObjects, mapPerUserPublicPushedDataToStateObjects,
+  mapPerUserPrivateAdminablePushedDataToStateObjects, mapPerUserPublicPushedDataToStateObjects, mapPerExhibitorStaffPushedDataToStateObjects,
   mapPerUserPrivateAdminablePushedDataToObjectOfStateObjects, mapPerUserPublicPushedDataToObjectOfStateObjects,
   reducePerUserPublicDataToStateCount, reducePerUserPrivateAdminableDataToStateCount,
 } from './helpers'
