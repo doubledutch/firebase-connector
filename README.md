@@ -14,13 +14,18 @@ npm i --save @doubledutch/firebase-connector
 
 ```javascript
 import client from '@doubledutch/rn-client'
-import FirebaseConnector from '@doubledutch/firebase-connector'
-const fbc = FirebaseConnector(client, 'myextension')
-
-fbc.initializeAppWithSimpleBackend()
+import getFirebaseConnector from '@doubledutch/firebase-connector'
+const fbcPromise = getFirebaseConnector(client, 'myextension').then(fbc => {
+  fbc.initializeAppWithSimpleBackend()
+})
 ```
 
 ## API
+
+The exported `getFirebaseConnector` is a function `(client, extensionName) => Promise<FirebaseConnector>`
+
+A `FirebaseConnector` resolved from the Promise returned by `getFirebaseConnector` has the following
+functions and properties available:
 
 - `initializeAppWithSimpleBackend()`: Calls
   [firebase.initializeApp()](https://firebase.google.com/docs/reference/node/firebase)
@@ -78,6 +83,27 @@ various levels of security.
   that is readable and writable by anyone authenticated to the current event.
 
 ### Helpers
+
+#### provideFirebaseConnectorToReactComponent
+
+In React projects, create a single FirebaseConnector, and provide it to your root component.
+Export the result as your root component. This ensures that `WrappedComponent` will not be
+rendered until `fbc` is ready.
+
+```jsx
+export default provideFirebaseConnectorToReactComponent(client, 'myextension', (props, fbc) =>
+  <WrappedComponent {...props} fbc={fbc} />, PureComponent)
+
+class WrappedComponent extends PureComponent {
+  componentDidMount() {
+    this.props.fbc...
+  }
+
+  render() {
+    return <div>Hello, world!</div>
+  }
+}
+```
 
 The following functions are provided to aid in mapping data in firebase to
 state in a React Component. These functions set up subscriptions to

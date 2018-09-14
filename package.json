@@ -1,6 +1,6 @@
 {
   "name": "@doubledutch/firebase-connector",
-  "version": "3.4.3",
+  "version": "4.0.1",
   "description": "Connector between DoubleDutch client and Google Cloud Platform's Firebase",
   "main": "lib/index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/doubledutch/firebase-connector#readme",
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "firebase": "^4.10.0",
+    "firebase": "^5.4.2",
     "jest": "^22.4.3"
   },
   "devDependencies": {

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/database'
 import config from './config'
 export {
   mapPushedDataToStateObjects, mapPushedDataToObjectOfStateObjects,
-  mapPerUserPrivateAdminablePushedDataToStateObjects, mapPerUserPublicPushedDataToStateObjects,
+  mapPerUserPrivateAdminablePushedDataToStateObjects, mapPerUserPublicPushedDataToStateObjects, mapPerExhibitorStaffPushedDataToStateObjects,
   mapPerUserPrivateAdminablePushedDataToObjectOfStateObjects, mapPerUserPublicPushedDataToObjectOfStateObjects,
   reducePerUserPublicDataToStateCount, reducePerUserPrivateAdminableDataToStateCount,
 } from './helpers'
@@ -26,8 +28,15 @@ export {
 // Parameters
 // - client  - A DoubleDutch environment-specific client, e.g. from @doubledutch/rn-client)
 // - extension - The name of the DoubleDutch extension from your package.json // TODO: It would be nice if this were injected in the DD bindings.
-export default function connector(doubleDutchClient, extension) {
-  const { currentUser } = doubleDutchClient
+export default getFirebaseConnector
+async function getFirebaseConnector(doubleDutchClient, extension) {
+  if (doubleDutchClient.longLivedToken) {
+    const [eventId, region] = doubleDutchClient.longLivedToken.split(':', 2)
+    doubleDutchClient.region = region
+    doubleDutchClient.setCurrentEvent({ id: eventId })
+  }
+  const currentUser = await doubleDutchClient.getCurrentUser()
+  const currentEvent = await doubleDutchClient.getCurrentEvent()
   return {
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, extension) },
@@ -67,13 +76,25 @@ export default function connector(doubleDutchClient, extension) {
         allRef(subPath) {
           return dbRef(`public/all`, subPath)
         }
-      }
+      },
+      exhibitors: {
+        staffRef(exhibitorId, subPath) {
+          return dbRef(`exhibitors/${exhibitorId}/staff/${currentUser.id}`, subPath)
+        },
+        allStaffRef(exhibitorId, subPath) {
+          return dbRef(`exhibitors/${exhibitorId}/staff`, subPath)
+        },
+        adminPrivateRef(exhibitorId, subPath) {
+          return dbRef(`exhibitors/${exhibitorId}/admin/private`, subPath)
+        },
+        adminPublicRef(exhibitorId, subPath) {
+          return dbRef(`exhibitors/${exhibitorId}/admin/public`, subPath)
+        },
+      },
     }
   }
 
   function dbRef(midPath, subPath) {
-    const { currentEvent } = doubleDutchClient
-    if (!currentEvent) throw 'currentEvent is not yet known in this environment. Wait until signin() or signinAdmin() has resolved.'
     return firebase.database().ref(`simple/${extension}/events/${currentEvent.id}/${midPath}/${subPath || ''}`)
   }
 }
@@ -105,9 +126,6 @@ export function signin(doubleDutchClient, extension) {
 
 function signinAdmin(doubleDutchClient, extension) {
   if (doubleDutchClient.longLivedToken) {
-    const [eventId, region] = doubleDutchClient.longLivedToken.split(':', 2)
-    doubleDutchClient.region = region
-    doubleDutchClient.currentEvent = { id: eventId }
     return fetch(`${config.firebase.cloudFunctions}/adminToken`, {
       headers: { authorization: `Bearer jwt-${doubleDutchClient.longLivedToken}` }
     })
@@ -123,9 +141,13 @@ function signinAdmin(doubleDutchClient, extension) {
 
 function getToken(type, client, extension){
   return client.getToken()
-  .then(ddToken => fetch(`${config.firebase.cloudFunctions}/${type}Token?event=${encodeURIComponent(client.currentEvent.id)}&extension=${encodeURIComponent(extension)}&region=${client.region}`, {
-    headers: { authorization: `Bearer ${ddToken}` }
-  }))
+  .then(ddToken =>
+    client.getCurrentEvent().then(currentEvent =>
+      fetch(`${config.firebase.cloudFunctions}/${type}Token?event=${encodeURIComponent(currentEvent.id)}&extension=${encodeURIComponent(extension)}&region=${client.region}`, {
+        headers: { authorization: `Bearer ${ddToken}` }
+      })
+    )
+  )
   .then(res => {
     if (!res.ok) throw new Error(`Signin error: ${res.status} ${res.statusText || ''}`)
     return res.text()
@@ -135,4 +157,26 @@ function getToken(type, client, extension){
 function signinType(type, client, extension) {
   return getToken(type, client, extension)
   .then(firebaseToken => firebase.auth().signInWithCustomToken(firebaseToken))
+}
+
+export function provideFirebaseConnectorToReactComponent(client, extensionName, renderWrappedComponent, PureComponent) {
+  return class FbcManager extends PureComponent {
+    constructor(props) {
+      super(props)
+      this.state = {}
+    }
+
+    componentDidMount() {
+      getFirebaseConnector(client, extensionName).then(fbc => {
+        fbc.initializeAppWithSimpleBackend()
+        this.setState({fbc})
+      })
+    }
+  
+    render() {
+      const {fbc} = this.state
+      if (!fbc) return null
+      return renderWrappedComponent(this.props, fbc)
+    }
+  }
 }

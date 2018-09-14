@@ -96,6 +96,10 @@ export function mapPerUserPrivateAdminablePushedDataToStateObjects(fbc, userRefK
   mapPerUserPushedDataToStateObjects(fbc.database.private.adminableUsersRef(), userRefKey, component, stateKey, keyFn)
 }
 
+export function mapPerExhibitorStaffPushedDataToStateObjects(fbc, exhibitorId, userRefKey, component, stateKey, keyFn) {
+  mapPerUserPushedDataToStateObjects(fbc.database.exhibitors.allStaffRef(exhibitorId), userRefKey, component, stateKey, keyFn)
+}
+
 function mapPerUserPushedDataToStateObjects(usersRef, userRefKey, component, stateKey, keyFn) {
   convertPerUserDataToState(usersRef, userRefKey, component, stateKey, keyFn,
     (newState, userId, key) => delete newState[key],
