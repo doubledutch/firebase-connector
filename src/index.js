@@ -61,7 +61,16 @@ async function getFirebaseConnector(doubleDutchClient, extension) {
         },
         adminRef(subPath) {
           return dbRef(`private/admin`, subPath)
-        }
+        },
+        userMessagesRef(receiverId, senderId) {
+          return dbRef(`private/total/userMessages/${receiverId}`, senderId)
+        },
+        adminableUserMessagesRef(receiverId, senderId) {
+          return dbRef(`private/adminable/userMessages/${receiverId}`, senderId)
+        },
+        adminMessagesRef(senderId) {
+          return dbRef(`private/adminMessages`, senderId)
+        },
       },
       public: {
         userRef(subPath) {

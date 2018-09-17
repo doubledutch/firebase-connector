@@ -66,6 +66,28 @@ various levels of security.
   by anyone in the specified tier. `default` is used as the key for the default tier.
 - `database.private.adminRef(path)`: `private/admin` : Gets a [Firebase ref][firebase-ref] to a key
   that is readable and writable only by an event owner for the current event.
+- `database.private.userMessagesRef(receiverId, [senderId])`: `private/total/userMessages/:receiverId/:senderId` :
+  Gets a [Firebase ref][firebase-ref] to a key that holds messages from various other attendees.
+  - If `senderId` is specified, the ref contains any messages sent to `receiverId` from `senderId` and is
+    readable by sender and receiver, writable by the sender, and deletable (but not otherwise modifiable)
+    by the receiver.
+  - If `senderId` is undefined, the ref contains keys of any `senderId`s that have sent messages, which can
+    be enumerated to see all senders, but only by the receiver.
+- `database.private.adminableUserMessagesRef(receiverId, [senderId])`: `private/adminable/userMessages/:receiverId/:senderId` :
+  Gets a [Firebase ref][firebase-ref] to a key that holds messages from various other attendees that
+  is also readable/writable by an event owner for the current event.
+  - If `senderId` is specified, the ref contains any messages sent to `receiverId` from `senderId` and is
+    readable by sender and receiver, writable by the sender, and deletable (but not otherwise modifiable)
+    by the receiver.
+  - If `senderId` is undefined, the ref contains keys of any `senderId`s that have sent messages, which can
+    be enumerated to see all senders, but only by the receiver.
+- `database.private.adminMessagesRef([senderId])`: `private/adminMessages/:senderId` :
+  Gets a [Firebase ref][firebase-ref] to a key that holds messages from various attendees to event organizers.
+  - If `senderId` is specified, the ref contains any messages sent from `senderId` and is
+    readable by the sender and event organizers, writable by the sender, and deletable (but not otherwise modifiable)
+    by the event organizers.
+  - If `senderId` is undefined, the ref contains keys of any `senderId`s that have sent messages, which can
+    be enumerated to see all senders, but only by event organizers.
 
 #### Public
 
