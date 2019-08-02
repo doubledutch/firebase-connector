@@ -42,6 +42,7 @@ async function getFirebaseConnector(doubleDutchClient, extension) {
   const currentUser = await doubleDutchClient.getCurrentUser()
   const currentEvent = await doubleDutchClient.getCurrentEvent()
   return {
+    firebase,
     initializeAppWithSimpleBackend,
     signin() { return signin(doubleDutchClient, extension) },
     signinAdmin() { return signinAdmin(doubleDutchClient, extension) },

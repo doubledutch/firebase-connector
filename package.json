@@ -1,6 +1,6 @@
 {
   "name": "@doubledutch/firebase-connector",
-  "version": "4.1.2",
+  "version": "4.2.1",
   "description": "Connector between DoubleDutch client and Google Cloud Platform's Firebase",
   "main": "lib/index.js",
   "scripts": {
