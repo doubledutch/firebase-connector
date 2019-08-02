@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-// Turns firebase objects stored immediately under the given ref into state at
-// [stateKey]: { [key]: {...value, id: key} }
-// where key is keyFn(keyInData, valueInData) if keyFn is specified, otherwise
-// the firebase key.
+/**
+ * Turns firebase objects stored immediately under the given ref into state at
+ * [stateKey]: { [key]: {...value, id: key} }
+ * where key is keyFn(keyInData, valueInData) if keyFn is specified, otherwise
+ * the firebase key.
+ * 
+ * @param {*} ref 
+ * @param {React.Component} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ */
 export function mapPushedDataToStateObjects(ref, component, stateKey, keyFn) {
   ref.on('child_added', onData)
   ref.on('child_changed', onData)
@@ -40,10 +47,18 @@ export function mapPushedDataToStateObjects(ref, component, stateKey, keyFn) {
   }
 }
 
-// Turns firebase objects stored immediately under the given ref into state at
-// [stateKey]: { [key]: { [subKey]: {...value, id: key} } }
-// where key    = keyFn(keyInData, valueInData)
-// and   subKey = subKeyFn(userId, keyInUserData, value) if subKeyFn is specified, otherwise the firebase key.
+/**
+ * Turns firebase objects stored immediately under the given ref into state at
+ * [stateKey]: { [key]: { [subKey]: {...value, id: key} } }
+ * where key    = keyFn(keyInData, valueInData)
+ * and   subKey = subKeyFn(userId, keyInUserData, value) if subKeyFn is specified, otherwise the firebase key.
+ * 
+ * @param {*} ref 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ * @param {*} subKeyFn 
+ */
 export function mapPushedDataToObjectOfStateObjects(ref, component, stateKey, keyFn, subKeyFn) {
   ref.on('child_added', onData)
   ref.on('child_changed', onData)
@@ -82,16 +97,32 @@ export function mapPushedDataToObjectOfStateObjects(ref, component, stateKey, ke
   
 }
 
-// Turns firebase objects {...value} with paths `/public/users/:userId/:userRefKey/:keyInUserData`
-// into state at [stateKey]: { [key]: {...value, userId, id: key} }
-// where key = keyFn(userId, keyInUserData, value)
+/**
+ * Turns firebase objects {...value} with paths `/public/users/:userId/:userRefKey/:keyInUserData`
+ * into state at [stateKey]: { [key]: {...value, userId, id: key} }
+ * where key = keyFn(userId, keyInUserData, value)
+ * 
+ * @param {*} fbc 
+ * @param {string} userRefKey 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ */
 export function mapPerUserPublicPushedDataToStateObjects(fbc, userRefKey, component, stateKey, keyFn) {
   mapPerUserPushedDataToStateObjects(fbc.database.public.usersRef(), userRefKey, component, stateKey, keyFn)
 }
 
-// Turns firebase objects {...value} with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
-// into state at [stateKey]: { [key]: {...value, userId, id: key} }
-// where key = keyFn(userId, keyInUserData, value)
+/**
+ * Turns firebase objects {...value} with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
+ * into state at [stateKey]: { [key]: {...value, userId, id: key} }
+ * where key = keyFn(userId, keyInUserData, value)
+ * 
+ * @param {*} fbc 
+ * @param {string} userRefKey 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ */
 export function mapPerUserPrivateAdminablePushedDataToStateObjects(fbc, userRefKey, component, stateKey, keyFn) {
   mapPerUserPushedDataToStateObjects(fbc.database.private.adminableUsersRef(), userRefKey, component, stateKey, keyFn)
 }
@@ -106,18 +137,37 @@ function mapPerUserPushedDataToStateObjects(usersRef, userRefKey, component, sta
     (newState, userId, key, value, keyInUserData) => newState[key] = {...value, userId, id: key})
 }
 
-// Turns firebase objects {...value} with paths `/public/users/:userId/:userRefKey/:keyInUserData`
-// into state at [stateKey]: { [key]: {[subKey]: {...value, userId, key} } }
-// where key =    keyFn(userId, keyInUserData, value)
-// and   subKey = subKeyFn(userId, keyInUserData, value)
+/**
+ * Turns firebase objects {...value} with paths `/public/users/:userId/:userRefKey/:keyInUserData`
+ * into state at [stateKey]: { [key]: {[subKey]: {...value, userId, key} } }
+ * where key =    keyFn(userId, keyInUserData, value)
+ * and   subKey = subKeyFn(userId, keyInUserData, value)
+ * 
+ * @param {*} fbc 
+ * @param {string} userRefKey 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ * @param {*} subKeyFn 
+ */
+
 export function mapPerUserPublicPushedDataToObjectOfStateObjects(fbc, userRefKey, component, stateKey, keyFn, subKeyFn) {
   mapPerUserPushedDataToObjectOfStateObjects(fbc.database.public.usersRef(), userRefKey, component, stateKey, keyFn, subKeyFn)
 }
 
-// Turns firebase objects {...value} with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
-// into state at [stateKey]: { [key]: {[subKey]: {...value, userId, key} } }
-// where key =    keyFn(userId, keyInUserData, value)
-// and   subKey = subKeyFn(userId, keyInUserData, value)
+/**
+ * Turns firebase objects {...value} with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
+ * into state at [stateKey]: { [key]: {[subKey]: {...value, userId, key} } }
+ * where key =    keyFn(userId, keyInUserData, value)
+ * and   subKey = subKeyFn(userId, keyInUserData, value)
+ * 
+ * @param {*} fbc 
+ * @param {string} userRefKey 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ * @param {*} subKeyFn 
+ */
 export function mapPerUserPrivateAdminablePushedDataToObjectOfStateObjects(fbc, userRefKey, component, stateKey, keyFn, subKeyFn) {
   mapPerUserPushedDataToObjectOfStateObjects(fbc.database.private.adminableUsersRef(), userRefKey, component, stateKey, keyFn, subKeyFn)
 }
@@ -138,19 +188,35 @@ function mapPerUserPushedDataToObjectOfStateObjects(usersRef, userRefKey, compon
     })
 }
 
-// Turns firebase objects {...value} with paths `/public/users/:userId/:userRefKey/:keyInUserData`
-// into state at [stateKey]: { [key]: count }
-// where key =   keyFn(userId, keyInUserData, value)
-// and   count = the number of objects from all users with [key]
+/**
+ * Turns firebase objects {...value} with paths `/public/users/:userId/:userRefKey/:keyInUserData`
+ * into state at [stateKey]: { [key]: count }
+ * where key =   keyFn(userId, keyInUserData, value)
+ * and   count = the number of objects from all users with [key]
+ * 
+ * @param {*} fbc 
+ * @param {string} userRefKey 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ */
 export function reducePerUserPublicDataToStateCount(fbc, userRefKey, component, stateKey,
     keyFn /* (userId, keyInUserData, valueInUserData) => key */) {
   reducePerUserDataToStateCount(fbc.database.public.usersRef(), userRefKey, component, stateKey, keyFn)
 }
 
-// Turns firebase objects {...value} with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
-// into state at [stateKey]: { [key]: count }
-// where key =   keyFn(userId, keyInUserData, value)
-// and   count = the number of objects from all users with [key]
+/**
+ * Turns firebase objects {...value} with paths `/private/adminable/users/:userId/:userRefKey/:keyInUserData`
+ * into state at [stateKey]: { [key]: count }
+ * where key =   keyFn(userId, keyInUserData, value)
+ * and   count = the number of objects from all users with [key]
+ * 
+ * @param {*} fbc 
+ * @param {string} userRefKey 
+ * @param {*} component 
+ * @param {string} stateKey 
+ * @param {*} keyFn 
+ */
 export function reducePerUserPrivateAdminableDataToStateCount(fbc, userRefKey, component, stateKey,
     keyFn /* (userId, keyInUserData, valueInUserData) => key */) {
   reducePerUserDataToStateCount(fbc.database.private.adminableUsersRef(), userRefKey, component, stateKey, keyFn)
